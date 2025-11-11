@@ -1,0 +1,121 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+#define MAX 100
+
+int top = -1;
+char stack[MAX];
+
+// push with overflow check
+void push(char x) {
+    if (top >= MAX - 1) {
+        fprintf(stderr, "Stack overflow\n");
+        return;
+    }
+    stack[++top] = x;
+}
+
+// pop with underflow check
+char pop() {
+    if (top == -1)
+        return '\0';
+    return stack[top--];
+}
+
+// precedence: '(' lowest
+int prcd(char c) {
+    if (c == '(') return 0;
+    if (c == '+' || c == '-') return 1;
+    if (c == '*' || c == '/') return 2;
+    return 0; // default
+}
+
+// reverse a null-terminated string in place
+void reverse_str(char str[]) {
+    int length = strlen(str);
+    for (int i = 0; i < length / 2; ++i) {
+        char tmp = str[i];
+        str[i] = str[length - i - 1];
+        str[length - i - 1] = tmp;
+    }
+}
+
+// infix -> postfix (both null-terminated strings)
+void infix_to_postfix(const char infix[], char postfix[]) {
+    int i = 0, j = 0;
+    char x;
+
+    // ensure stack empty
+    top = -1;
+
+    while (infix[i] != '\0') {
+        char temp = infix[i];
+
+        if (isalnum((unsigned char)temp)) {
+            postfix[j++] = temp;
+        }
+        else if (temp == '(') {
+            push(temp);
+        }
+        else if (temp == ')') {
+            // pop until '(' or stack empty
+            while ((x = pop()) != '\0' && x != '(') {
+                postfix[j++] = x;
+            }
+        }
+        else { // operator
+            while (top != -1 && stack[top] != '(' && prcd(stack[top]) >= prcd(temp)) {
+                postfix[j++] = pop();
+            }
+            push(temp);
+        }
+        i++;
+    }
+
+    // pop remaining operators
+    while ((x = pop()) != '\0') {
+        postfix[j++] = x;
+    }
+
+    postfix[j] = '\0';
+}
+
+// infix -> prefix
+void infix_to_prefix(char infix[], char prefix[]) {
+    char postfix[MAX];
+
+    // Reverse the infix expression
+    reverse_str(infix);
+
+    // swap '(' <-> ')'
+    for (int i = 0; infix[i] != '\0'; ++i) {
+        if (infix[i] == '(') infix[i] = ')';
+        else if (infix[i] == ')') infix[i] = '(';
+    }
+
+    // convert reversed-modified infix to postfix
+    infix_to_postfix(infix, postfix);
+
+    // reverse postfix to get prefix
+    reverse_str(postfix);
+
+    // copy to prefix
+    strcpy(prefix, postfix);
+}
+
+int main() {
+    char infix[MAX], prefix[MAX];
+
+    printf("Enter the infix expression (no spaces, e.g. (a+b)*c ): \n");
+    if (scanf("%99s", infix) != 1) {
+        fprintf(stderr, "Failed to read input\n");
+        return 1;
+    }
+
+    printf("Input infix: %s\n", infix);
+    infix_to_prefix(infix, prefix);
+    printf("Prefix: %s\n", prefix);
+
+    return 0;
+}
