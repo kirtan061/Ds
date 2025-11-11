@@ -1,0 +1,106 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX 10
+
+int arr[MAX];
+int front = -1, rear = -1;
+
+// Function to add an item to the queue
+void addqueue(int item)
+{
+    if (rear == MAX - 1)
+    {
+        printf("\nQueue is full\n");
+        return;
+    }
+
+    if (front == -1)
+        front = 0;
+
+    arr[++rear] = item;
+    printf("\nItem %d inserted successfully.\n", item);
+}
+
+// Function to delete an item from the queue
+int dequeue()
+{
+    int data;
+
+    if (front == -1)
+    {
+        printf("\nQueue is empty\n");
+        return -1;  // return -1 to indicate failure
+    }
+
+    data = arr[front];
+    arr[front] = 0;
+
+    if (front == rear)
+        front = rear = -1;
+    else
+        front++;
+
+    return data;
+}
+
+// Function to display the queue contents
+void display()
+{
+    printf("\n---------- Queue Contents ----------\n");
+
+    if (front == -1)
+    {
+        printf("Queue is empty.\n");
+        return;
+    }
+
+    for (int i = front; i <= rear; i++)
+        printf("%d ", arr[i]);
+
+    printf("\n------------------------------------\n");
+}
+
+// Main function
+int main()
+{
+    int item, ch;
+
+    do
+    {
+        printf("\n========== Queue Menu ==========");
+        printf("\n1. Insert item into Queue");
+        printf("\n2. Delete item from Queue");
+        printf("\n3. Display Queue");
+        printf("\n4. Exit");
+        printf("\nEnter your choice: ");
+        scanf("%d", &ch);
+
+        switch (ch)
+        {
+        case 1:
+            printf("\nEnter item to insert: ");
+            scanf("%d", &item);
+            addqueue(item);
+            break;
+
+        case 2:
+            item = dequeue();
+            if (item != -1)
+                printf("\nItem %d is deleted.\n", item);
+            break;
+
+        case 3:
+            display();
+            break;
+
+        case 4:
+            printf("\nExiting program...\n");
+            exit(0);
+
+        default:
+            printf("\nInvalid choice! Please try again.\n");
+        }
+    } while (ch != 4);
+
+    return 0;
+}
