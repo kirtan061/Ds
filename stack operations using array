@@ -1,0 +1,101 @@
+#include <stdio.h>
+
+#include <stdlib.h>
+
+#define SIZE 4
+
+int top = -1, int_array[SIZE];
+void push();
+void pop();
+void show();
+
+int main()
+{
+    int choice;
+
+    while (1)
+    {
+        printf("\
+Perform operations on the stack:");
+        printf("\
+1.Push the element\
+2.Pop the element\
+3.Show\
+4.End");
+        printf("\
+\
+Enter the choice: ");
+        scanf("%d", &choice);
+
+        switch (choice)
+        {
+        case 1:
+            push();
+            break;
+        case 2:
+            pop();
+            break;
+        case 3:
+            show();
+            break;
+        case 4:
+            exit(0);
+
+        default:
+            printf("\
+Invalid choice!!");
+        }
+    }
+}
+
+void push()
+{
+    int x;
+
+    if (top == SIZE - 1)
+    {
+        printf("\
+Overflow!!");
+    }
+    else
+    {
+        printf("\
+Enter the element to be added onto the stack: ");
+        scanf("%d", &x);
+        top = top + 1;
+        int_array[top] = x;
+    }
+}
+
+void pop()
+{
+    if (top == -1)
+    {
+        printf("\
+Underflow!!");
+    }
+    else
+    {
+        printf("\
+Popped element: %d", int_array[top]);
+        top = top - 1;
+    }
+}
+
+void show()
+{
+    if (top == -1)
+    {
+        printf("\
+Underflow!!");
+    }
+    else
+    {
+        printf("\
+Elements present in the stack: \
+");
+        for (int i = top; i >= 0; --i)
+            printf("%d\
+", int_array[i]);
+    }
+}
