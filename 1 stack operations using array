@@ -1,10 +1,11 @@
 #include <stdio.h>
-
 #include <stdlib.h>
 
 #define SIZE 4
 
-int top = -1, int_array[SIZE];
+int top = -1;
+int int_array[SIZE];
+
 void push();
 void pop();
 void show();
@@ -15,16 +16,12 @@ int main()
 
     while (1)
     {
-        printf("\
-Perform operations on the stack:");
-        printf("\
-1.Push the element\
-2.Pop the element\
-3.Show\
-4.End");
-        printf("\
-\
-Enter the choice: ");
+        printf("\n--- Stack Operations ---\n");
+        printf("1. Push\n");
+        printf("2. Pop\n");
+        printf("3. Show\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
         scanf("%d", &choice);
 
         switch (choice)
@@ -40,10 +37,8 @@ Enter the choice: ");
             break;
         case 4:
             exit(0);
-
         default:
-            printf("\
-Invalid choice!!");
+            printf("Invalid choice!\n");
         }
     }
 }
@@ -54,16 +49,15 @@ void push()
 
     if (top == SIZE - 1)
     {
-        printf("\
-Overflow!!");
+        printf("Stack Overflow!\n");
     }
     else
     {
-        printf("\
-Enter the element to be added onto the stack: ");
+        printf("Enter the element to push: ");
         scanf("%d", &x);
-        top = top + 1;
+        top++;
         int_array[top] = x;
+        printf("%d pushed onto the stack.\n", x);
     }
 }
 
@@ -71,14 +65,12 @@ void pop()
 {
     if (top == -1)
     {
-        printf("\
-Underflow!!");
+        printf("Stack Underflow!\n");
     }
     else
     {
-        printf("\
-Popped element: %d", int_array[top]);
-        top = top - 1;
+        printf("Popped element: %d\n", int_array[top]);
+        top--;
     }
 }
 
@@ -86,16 +78,14 @@ void show()
 {
     if (top == -1)
     {
-        printf("\
-Underflow!!");
+        printf("Stack is empty.\n");
     }
     else
     {
-        printf("\
-Elements present in the stack: \
-");
-        for (int i = top; i >= 0; --i)
-            printf("%d\
-", int_array[i]);
+        printf("Stack elements (top to bottom):\n");
+        for (int i = top; i >= 0; i--)
+        {
+            printf("%d\n", int_array[i]);
+        }
     }
 }
