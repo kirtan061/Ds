@@ -1,0 +1,42 @@
+#include <stdio.h>
+
+void shellSort(int a[], int n) {
+    int gap, i, j, temp;
+
+    // Start with a large gap and reduce it
+    for (gap = n / 2; gap > 0; gap /= 2) {
+
+        // Perform gapped insertion sort
+        for (i = gap; i < n; i++) {
+            temp = a[i];
+            j = i;
+
+            while (j >= gap && a[j - gap] > temp) {
+                a[j] = a[j - gap];
+                j -= gap;
+            }
+            a[j] = temp;
+        }
+    }
+}
+
+int main() {
+    int a[100], n, i;
+
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+
+    printf("Enter %d elements:\n", n);
+    for (i = 0; i < n; i++) {
+        scanf("%d", &a[i]);
+    }
+
+    shellSort(a, n);
+
+    printf("Sorted array:\n");
+    for (i = 0; i < n; i++) {
+        printf("%d ", a[i]);
+    }
+
+    return 0;
+}
