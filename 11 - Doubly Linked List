@@ -1,0 +1,165 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+/* Node structure */
+struct Node {
+    int data;
+    struct Node *prev;
+    struct Node *next;
+};
+
+struct Node *head = NULL;
+
+/* a) Insert at end */
+void insert(int value) {
+    struct Node *newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = value;
+    newNode->prev = NULL;
+    newNode->next = NULL;
+
+    if (head == NULL) {
+        head = newNode;
+        return;
+    }
+
+    struct Node *temp = head;
+    while (temp->next != NULL)
+        temp = temp->next;
+
+    temp->next = newNode;
+    newNode->prev = temp;
+}
+
+/* b) Delete by value */
+void deleteValue(int key) {
+    struct Node *temp = head;
+
+    if (temp == NULL) {
+        printf("List is empty\n");
+        return;
+    }
+
+    if (temp->data == key) {
+        head = temp->next;
+        if (head != NULL)
+            head->prev = NULL;
+        free(temp);
+        return;
+    }
+
+    while (temp != NULL && temp->data != key)
+        temp = temp->next;
+
+    if (temp == NULL) {
+        printf("Element not found\n");
+        return;
+    }
+
+    temp->prev->next = temp->next;
+    if (temp->next != NULL)
+        temp->next->prev = temp->prev;
+
+    free(temp);
+}
+
+/* c) Search */
+void search(int key) {
+    struct Node *temp = head;
+    int pos = 1;
+
+    while (temp != NULL) {
+        if (temp->data == key) {
+            printf("Element found at position %d\n", pos);
+            return;
+        }
+        temp = temp->next;
+        pos++;
+    }
+    printf("Element not found\n");
+}
+
+/* d) Reverse */
+void reverse() {
+    struct Node *current = head;
+    struct Node *temp = NULL;
+
+    while (current != NULL) {
+        temp = current->prev;
+        current->prev = current->next;
+        current->next = temp;
+        current = current->prev;
+    }
+
+    if (temp != NULL)
+        head = temp->prev;
+
+    printf("List reversed\n");
+}
+
+/* Display list */
+void display() {
+    struct Node *temp = head;
+    if (head == NULL) {
+        printf("List is empty\n");
+        return;
+    }
+    printf("List: ");
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+/* Main function */
+int main() {
+    int choice, value;
+
+    while (1) {
+        printf("\n--- MENU ---\n");
+        printf("1. Insert\n");
+        printf("2. Delete\n");
+        printf("3. Search\n");
+        printf("4. Reverse\n");
+        printf("5. Display\n");
+        printf("6. Exit\n");
+
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter value to insert: ");
+                scanf("%d", &value);
+                insert(value);
+                break;
+
+            case 2:
+                printf("Enter value to delete: ");
+                scanf("%d", &value);
+                deleteValue(value);
+                break;
+
+            case 3:
+                printf("Enter value to search: ");
+                scanf("%d", &value);
+                search(value);
+                break;
+
+            case 4:
+                reverse();
+                break;
+
+            case 5:
+                display();
+                break;
+
+            case 6:
+                exit(0);
+
+            default:
+                printf("Invalid choice\n");
+        }
+    }
+    return 0;
+}
