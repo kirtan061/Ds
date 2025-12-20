@@ -1,0 +1,65 @@
+#include <stdio.h>
+
+/* Merge two sorted subarrays */
+void merge(int a[], int left, int mid, int right) {
+    int temp[100];
+    int i = left;      // left subarray index
+    int j = mid + 1;   // right subarray index
+    int k = left;      // temp array index
+
+    // Merge the two halves
+    while (i <= mid && j <= right) {
+        if (a[i] <= a[j]) {
+            temp[k++] = a[i++];
+        } else {
+            temp[k++] = a[j++];
+        }
+    }
+
+    // Copy remaining elements of left half
+    while (i <= mid) {
+        temp[k++] = a[i++];
+    }
+
+    // Copy remaining elements of right half
+    while (j <= right) {
+        temp[k++] = a[j++];
+    }
+
+    // Copy back to original array
+    for (int p = left; p <= right; p++) {
+        a[p] = temp[p];
+    }
+}
+
+/* Merge Sort */
+void mergeSort(int a[], int left, int right) {
+    if (left < right) {
+        int mid = (left + right) / 2;
+
+        mergeSort(a, left, mid);      // sort left half
+        mergeSort(a, mid + 1, right); // sort right half
+        merge(a, left, mid, right);   // merge halves
+    }
+}
+
+int main() {
+    int a[100], n, i;
+
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+
+    printf("Enter elements:\n");
+    for (i = 0; i < n; i++) {
+        scanf("%d", &a[i]);
+    }
+
+    mergeSort(a, 0, n - 1);
+
+    printf("Sorted array:\n");
+    for (i = 0; i < n; i++) {
+        printf("%d ", a[i]);
+    }
+
+    return 0;
+}
