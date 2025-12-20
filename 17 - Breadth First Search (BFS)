@@ -1,0 +1,114 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+/* Node for adjacency list */
+struct node {
+    int vertex;
+    struct node* next;
+};
+
+/* Graph structure */
+struct graph {
+    int numVertices;
+    struct node** adjLists;
+    int* visited;
+};
+
+/* Queue for BFS */
+int queue[50], front = -1, rear = -1;
+
+void enqueue(int value) {
+    queue[++rear] = value;
+}
+
+int dequeue() {
+    return queue[++front];
+}
+
+int isEmpty() {
+    return front == rear;
+}
+
+/* Create a node */
+struct node* createNode(int v) {
+    struct node* newNode = (struct node*)malloc(sizeof(struct node));
+    newNode->vertex = v;
+    newNode->next = NULL;
+    return newNode;
+}
+
+/* Create graph */
+struct graph* createGraph(int vertices) {
+    struct graph* g = (struct graph*)malloc(sizeof(struct graph));
+    g->numVertices = vertices;
+
+    g->adjLists = (struct node**)malloc(vertices * sizeof(struct node*));
+    g->visited = (int*)malloc(vertices * sizeof(int));
+
+    for (int i = 0; i < vertices; i++) {
+        g->adjLists[i] = NULL;
+        g->visited[i] = 0;
+    }
+    return g;
+}
+
+/* Add edge (undirected graph) */
+void addEdge(struct graph* g, int src, int dest) {
+    struct node* newNode = createNode(dest);
+    newNode->next = g->adjLists[src];
+    g->adjLists[src] = newNode;
+
+    newNode = createNode(src);
+    newNode->next = g->adjLists[dest];
+    g->adjLists[dest] = newNode;
+}
+
+/* BFS traversal */
+void BFS(struct graph* g, int startVertex) {
+    enqueue(startVertex);
+    g->visited[startVertex] = 1;
+
+    printf("BFS Traversal: ");
+
+    while (!isEmpty()) {
+        int currentVertex = dequeue();
+        printf("%d ", currentVertex);
+
+        struct node* temp = g->adjLists[currentVertex];
+
+        while (temp != NULL) {
+            int adjVertex = temp->vertex;
+            if (g->visited[adjVertex] == 0) {
+                g->visited[adjVertex] = 1;
+                enqueue(adjVertex);
+            }
+            temp = temp->next;
+        }
+    }
+}
+
+/* Main function */
+int main() {
+    int vertices, edges, src, dest, start;
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &vertices);
+
+    struct graph* g = createGraph(vertices);
+
+    printf("Enter number of edges: ");
+    scanf("%d", &edges);
+
+    for (int i = 0; i < edges; i++) {
+        printf("Enter edge : ");
+        scanf("%d %d", &src, &dest);
+        addEdge(g, src, dest);
+    }
+
+    printf("Enter starting vertex for BFS: ");
+    scanf("%d", &start);
+
+    BFS(g, start);
+
+    return 0;
+}
