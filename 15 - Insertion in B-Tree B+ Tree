@@ -1,0 +1,171 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+/* ===================== B-TREE PART ===================== */
+
+#define T 3   // Minimum degree for B-Tree
+
+struct BTreeNode {
+    int keys[2*T-1];
+    struct BTreeNode *child[2*T];
+    int n;
+    int leaf;
+};
+
+struct BTreeNode* createBTreeNode(int leaf) {
+    struct BTreeNode* node =
+        (struct BTreeNode*)malloc(sizeof(struct BTreeNode));
+    node->leaf = leaf;
+    node->n = 0;
+    for (int i = 0; i < 2*T; i++)
+        node->child[i] = NULL;
+    return node;
+}
+
+void traverseBTree(struct BTreeNode* root) {
+    int i;
+    for (i = 0; i < root->n; i++) {
+        if (!root->leaf)
+            traverseBTree(root->child[i]);
+        printf("%d ", root->keys[i]);
+    }
+    if (!root->leaf)
+        traverseBTree(root->child[i]);
+}
+
+void splitChild(struct BTreeNode* parent, int i,
+                struct BTreeNode* y) {
+
+    struct BTreeNode* z = createBTreeNode(y->leaf);
+    z->n = T - 1;
+
+    for (int j = 0; j < T-1; j++)
+        z->keys[j] = y->keys[j+T];
+
+    if (!y->leaf) {
+        for (int j = 0; j < T; j++)
+            z->child[j] = y->child[j+T];
+    }
+
+    y->n = T - 1;
+
+    for (int j = parent->n; j >= i+1; j--)
+        parent->child[j+1] = parent->child[j];
+
+    parent->child[i+1] = z;
+
+    for (int j = parent->n-1; j >= i; j--)
+        parent->keys[j+1] = parent->keys[j];
+
+    parent->keys[i] = y->keys[T-1];
+    parent->n++;
+}
+
+void insertNonFull(struct BTreeNode* node, int k) {
+    int i = node->n - 1;
+
+    if (node->leaf) {
+        while (i >= 0 && node->keys[i] > k) {
+            node->keys[i+1] = node->keys[i];
+            i--;
+        }
+        node->keys[i+1] = k;
+        node->n++;
+    } else {
+        while (i >= 0 && node->keys[i] > k)
+            i--;
+
+        if (node->child[i+1]->n == 2*T-1) {
+            splitChild(node, i+1, node->child[i+1]);
+            if (k > node->keys[i+1])
+                i++;
+        }
+        insertNonFull(node->child[i+1], k);
+    }
+}
+
+struct BTreeNode* insertBTree(struct BTreeNode* root, int k) {
+    if (root == NULL) {
+        root = createBTreeNode(1);
+        root->keys[0] = k;
+        root->n = 1;
+        return root;
+    }
+
+    if (root->n == 2*T-1) {
+        struct BTreeNode* s = createBTreeNode(0);
+        s->child[0] = root;
+        splitChild(s, 0, root);
+
+        int i = 0;
+        if (s->keys[0] < k)
+            i++;
+        insertNonFull(s->child[i], k);
+        return s;
+    } else {
+        insertNonFull(root, k);
+        return root;
+    }
+}
+
+/* ===================== B+ TREE PART ===================== */
+
+#define MAX 3
+
+struct BPlusNode {
+    int data[MAX];
+    int count;
+};
+
+struct BPlusNode *rootPlus = NULL;
+
+struct BPlusNode* createBPlusNode(int value) {
+    struct BPlusNode* node =
+        (struct BPlusNode*)malloc(sizeof(struct BPlusNode));
+    node->data[0] = value;
+    node->count = 1;
+    return node;
+}
+
+void insertBPlus(int value) {
+    if (rootPlus == NULL) {
+        rootPlus = createBPlusNode(value);
+        return;
+    }
+    rootPlus->data[rootPlus->count++] = value;
+}
+
+void displayBPlus() {
+    printf("B+ Tree Leaf Data: ");
+    for (int i = 0; i < rootPlus->count; i++)
+        printf("%d ", rootPlus->data[i]);
+    printf("\n");
+}
+
+/* ===================== MAIN FUNCTION ===================== */
+
+int main() {
+    struct BTreeNode* root = NULL;
+    int n, val;
+
+    printf("Enter number of keys: ");
+    scanf("%d", &n);
+
+    for (int i = 0; i < n; i++) {
+        printf("Enter key: ");
+        scanf("%d", &val);
+
+        /* Insert into both trees */
+        root = insertBTree(root, val);
+        insertBPlus(val);
+    }
+
+    printf("\nB-Tree Traversal: ");
+    traverseBTree(root);
+
+    printf("\n");
+    displayBPlus();
+
+    return 0;
+}
+
